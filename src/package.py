@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 import sys
 import pyparsing as pp
 import json
@@ -9,13 +13,13 @@ NUL = '\00'
 class folder():
     def __init__(self):
         pass
-        
+
 class item():
     def __init__(self, file_path):
         with open(file_path, 'rb') as file:
             self.data = file.read()
             self.name = os.path.basename(file_path)
-            
+
     def __len__(self):
         return len(self.data)
 
@@ -31,28 +35,28 @@ def org(matchlist):
         else:
             base['.'].append(matchlist.pop(0))
     return base
-    
+
 def arx(archive, tree):
     archive.write('ARX' + NUL * 3)
     length = len(tree)-1 + len(tree['.']) # Length of archive base directory
     archive.write(struct.pack('II', 0x10, length * 64 + 3))
     archive.seek(0x10)
     package(archive, tree)
-    
+
 def get_end(f):
     p = f.tell()
     f.seek(0,2)
     end = f.tell()
     f.seek(p)
     return end
-    
+
 def expand(f, amount):
     p = f.tell()
     f.seek(amount-1, 1)
     f.write('\00')
     f.seek(p)
-    
-    
+
+
 def package(archive, tree):
     archive.write('DIR')
     length = len(tree)-1 + len(tree['.'])
