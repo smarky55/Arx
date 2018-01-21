@@ -4,18 +4,60 @@
 
 #include "ArxPackager.h"
 
-Folder ArxPackager::buildTree(){
-    Folder rootFolder("");
+std::ostream& operator<<(std::ostream& os, const Item obj) {
+	os << obj.name << std::endl;
+	for (SubItem item : obj.subItems) {
+		os << item << std::endl;
+	}
+	return os;
+}
 
+//SubItemSplitter::SubItemSplitter(Folder * const folder) {
+//	parentFolder = folder;
+//}
+
+void SubItemSplitter::operator()(Item const &item) {
+	parentFolder->subfolders.emplace_back(item);
+}
+
+void SubItemSplitter::operator()(Item const &item) const {
+	parentFolder->subfolders.emplace_back(item);
+}
+
+void SubItemSplitter::operator()(std::string filepath) {
+	parentFolder->files.emplace_back(filepath);
+}
+
+void SubItemSplitter::operator()(std::string filepath) const {
+	parentFolder->files.emplace_back(filepath);
+}
+
+Folder::Folder(Item const item) {
+	name = item.name;
+	for (SubItem subitem : item.subItems) {
+		boost::apply_visitor(SubItemSplitter(this), subitem);
+	}
+}
+
+Folder ArxPackager::buildTree(){
     using qi::parse;
+	using qi::phrase_parse;
 	using phoenix::push_back;
 
-	/*qi::rule<std::string> ident = *(qi::alnum | qi::char_("_"));
-	qi::rule<std::string> fileName = ident >> "." >> *qi::alnum;
-	qi::rule<std::string> path = *(ident >> "/") >> fileName;
-	qi::rule<std::string> folder;
-	folder = ident >> "{" >> *(path | folder) >> "}";*/
+	manifest.seekg(0, std::ios::end);
+	size_t size = manifest.tellg();
+	manifest.seekg(0);
+	std::string manBuffer(size, ' ');
+	manifest.read(&manBuffer[0], size);
+	
+	ManifestGrammar<std::string::const_iterator> grammar;
+	Item root;
+	std::cout << phrase_parse(manBuffer.begin(), manBuffer.end(), grammar, qi::ascii::space, root) << std::endl;
+	std::cout << root.name << root.subItems.size() << std::endl;
+	std::cout << root;
 
+
+	Folder rootFolder(root);
     return rootFolder;
 }
 
@@ -25,6 +67,7 @@ ArxPackager::ArxPackager(const char *arxPath, const char *manifestPath){
     arx = std::ofstream(arxPath, std::ios::out | std::ios::binary);
 
     Folder root = buildTree();
+	std::cout << root.name << ' ' << root.files.size() << ' ' << root.subfolders.size() << std::endl;
 }
 
 ArxPackager::~ArxPackager(){
