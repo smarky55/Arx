@@ -86,9 +86,63 @@ struct SubItemSplitter : boost::static_visitor<> {
 };
 
 class ArxPackager {
+    char *NUL = "\00";
     std::ofstream arx;
     std::ifstream manifest;
+
+
+	/**
+	 * Build file tree from the loaded manifest file.
+	 * \returns The root folder of the file tree
+	 */
     Folder buildTree();
+
+    /**
+     * Template function to handle writing of data in a binary format. Primarily for 
+	 * writing integers.
+     * \tparam T Type of @p data to write to @p file
+     * \param data Data to convert to binary format
+     * \param file File stream to write to
+     */
+    template <typename T>
+    void writeData(T data, std::ofstream &file);
+
+
+	/**
+	 * Write a number of null bytes to file.
+	 * \param num Number of bytes to write.
+	 * \param file File stream to write to.
+	 */
+	void writeNull(int num, std::ofstream &file);
+
+	/**
+	 * Recursive function to handle the writing of a folder to file.
+	 * \param folder The current working folder.
+	 * \param file File stream to write to.
+	 */
+	void package(Folder &folder, std::ofstream &file);
+
+	/**
+	 * Get the length of a file.
+	 * \param file File stream to get length of.
+	 * \returns Length of file stream.
+	 */
+	size_t getFileLength(std::ifstream &file);
+
+	/**
+	 * Get the length of a file.
+	 * \param file File stream to get length of.
+	 * \returns Length of file stream.
+	 */
+	size_t getFileLength(std::ofstream &file);
+
+	/**
+	 * Expands a file by @p amount bytes. Simplifies some operations.
+	 * \param amount Number of bytes to expand the file by.
+	 * \param file File stream to expand.
+	 */
+	void expand(size_t amount, std::ofstream &file);
+
 public:
     ArxPackager(const char *arxPath, const char *manifestPath);
     ~ArxPackager();
