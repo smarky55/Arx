@@ -103,6 +103,7 @@ void ArxPackager::package(Folder & folder, std::ofstream & file){
 			file.seekp(p1);
 		}
 		else {
+			std::cerr << "Unable to open file: " << path << std::endl;
 			throw std::runtime_error("Unable to open file: " + path);
 		}
 		item.close();

@@ -86,7 +86,6 @@ struct SubItemSplitter : boost::static_visitor<> {
 };
 
 class ArxPackager {
-    char *NUL = "\00";
     std::ofstream arx;
     std::ifstream manifest;
 
