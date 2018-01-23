@@ -73,22 +73,49 @@ void ArxPackager::writeNull(int num, std::ofstream & file){
 
 void ArxPackager::package(Folder & folder, std::ofstream & file){
 	file << "DIR";
-	size_t length = folder.subfolders.size() + folder.files.size();
-	size_t p1 = file.tellp();
+	size_t length = folder.size();
+	size_t p1;
 	expand(64 * length, file);
 
 	for (std::string path : folder.files) {
 		std::ifstream item(path, std::ios::in | std::ios::binary);
 		if (item.is_open()) {
-			writeData((int)getFileLength(file), file);
-			writeData((int)getFileLength(item) + 3, file);
-			file << path;
-			// TODO: Pad to full size & write file to archive.
+			int fileEnd = (int)getFileLength(file);
+			int itemLength = (int)getFileLength(item);
+			writeData(fileEnd, file);
+			writeData(itemLength + 3, file);
+
+			size_t separatorLoc = path.find_last_of("\\/");
+			std::string fileName;
+			if(separatorLoc == std::string::npos){
+				fileName = path;
+			} else {
+				fileName = path.substr(separatorLoc+1);
+			}
+			file << fileName;
+			writeNull(56 - fileName.size(), file);
+
+			p1 = file.tellp();
+			file.seekp(0, std::ios::end);
+			std::string itemBuf(itemLength, ' ');
+			item.read(&itemBuf[0], itemLength);
+			file << "FIL" << itemBuf;
+			file.seekp(p1);
 		}
 		else {
 			throw std::runtime_error("Unable to open file: " + path);
 		}
-		
+		item.close();
+	}
+	for (Folder subfolder : folder.subfolders) {
+		writeData((int)getFileLength(file), file);
+		writeData((int)subfolder.size() * 64 + 3, file);
+		file << subfolder.name;
+		writeNull(56 - subfolder.name.size(), file);
+		p1 = file.tellp();
+		file.seekp(0, std::ios::end);
+		package(subfolder, file);
+		file.seekp(p1);
 	}
 }
 

@@ -69,7 +69,7 @@ struct ManifestGrammar : qi::grammar<Iterator, Item(), qi::ascii::space_type> {
 struct Folder {
 	Folder() : name("") {}
 	Folder(Item const item);
-
+	size_t size() { return files.size() + subfolders.size(); };
 	std::string name;
 	std::vector<std::string> files;
 	std::vector<Folder> subfolders;
