@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10.2)
 
-set(BOOST_ROOT "F:/Sam/Documents/boost_1_66_0")
+set(BOOST_ROOT $ENV{BOOST_ROOT})
 
 project(arx)
 
