@@ -33,13 +33,16 @@ namespace Arx{
     };
 
     std::ostream& operator<<(std::ostream& os, const Item obj);
+}
 
-    BOOST_FUSION_ADAPT_STRUCT(
-    	Item,
-    	(std::string, name)
-    	(std::vector<SubItem>, subItems)
-    )//(std::vector<std::string>, files)
+// Macro MUST be run in global scope, breaking up the namespace block to keep close to struct definition
+BOOST_FUSION_ADAPT_STRUCT(
+    Arx::Item,
+    (std::string, name)
+    (std::vector<Arx::SubItem>, subItems)
+)
 
+namespace Arx {
     template <typename Iterator>
     struct ManifestGrammar : qi::grammar<Iterator, Item(), qi::ascii::space_type> {
     	ManifestGrammar() : ManifestGrammar::base_type(Folder) {
