@@ -7,7 +7,7 @@
 
 int main(int argc, char *argv[]){
     if(argc == 3){
-        ArxPackager packager(argv[2], argv[1]);
+        Arx::ArxPackager packager(argv[2], argv[1]);
 	}
 	else {
 		std::cout << "Usage: manifest_path arx_path" << std::endl;
