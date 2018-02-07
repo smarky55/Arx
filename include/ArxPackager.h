@@ -18,7 +18,10 @@
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/variant/recursive_variant.hpp>
 
+#include <ArxCommon.h>
+
 namespace Arx{
+
     namespace qi = boost::spirit::qi;
     namespace phoenix = boost::phoenix;
 

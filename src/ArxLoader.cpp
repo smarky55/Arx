@@ -19,10 +19,10 @@ namespace Arx{
 		}
 
 		char major = header[3];
-		char minor = header[4];
-		char rev = header[5];
+		//char minor = header[4];
+		//char rev = header[5];
 
-		if(major != 0 || minor != 0 || rev != 0) {
+		if(major != API_LEVEL) {
 			throw std::runtime_error("Unsupported archive version");
 		}
 

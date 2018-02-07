@@ -14,6 +14,7 @@ set(SOURCES ${SOURCES} src/ArxPackager.cpp)
 # Add header files to project
 set(HEADERS ${HEADERS} include/ArxLoader.h)
 set(HEADERS ${HEADERS} include/ArxPackager.h)
+set(HEADERS ${HEADERS} include/ArxCommon.h)
 
 add_library(arx ${SOURCES} ${HEADERS})
 

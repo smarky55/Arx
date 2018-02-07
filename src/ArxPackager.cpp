@@ -158,7 +158,8 @@ namespace Arx{
 		std::cout << root.name << ' ' << root.files.size() << ' ' << root.subfolders.size() << std::endl;
 
 		arx << "ARX"; // "Magic number" to check file type
-		writeNull(3, arx); // Three null bytes as placeholders
+		arx.write(&API_LEVEL, 1);
+		writeNull(2, arx); // Two null bytes as placeholders
 		int length = root.subfolders.size() + root.files.size();
 		writeData(0x10, arx); // Location of root directory
 		writeData(length * 64 + 3, arx); // Length of root directory

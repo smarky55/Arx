@@ -8,7 +8,11 @@
 #include <fstream>
 #include <sstream>
 #include <regex>
+
+#include <ArxCommon.h>
+
 namespace Arx{
+
 	class ArxLoader {
 		std::ifstream arx;
 		char header[0x10];
