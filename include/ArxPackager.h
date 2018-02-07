@@ -44,8 +44,8 @@ BOOST_FUSION_ADAPT_STRUCT(
 
 namespace Arx {
     template <typename Iterator>
-    struct ManifestGrammar : qi::grammar<Iterator, Item(), qi::ascii::space_type> {
-    	ManifestGrammar() : ManifestGrammar::base_type(Folder) {
+    struct ManifestGrammar : qi::grammar<Iterator, std::vector<SubItem>(), qi::ascii::space_type> {
+    	ManifestGrammar() : ManifestGrammar::base_type(SubItemList) {
             using namespace qi::labels;
     		using qi::lexeme;
             using phoenix::at_c;
@@ -60,18 +60,21 @@ namespace Arx {
                     >> -qi::ascii::space
                     >> '}';
            subItem %= Path | Folder; //[at_c<0>(_val) = _1]
+		   SubItemList %= +subItem;
     	}
     	qi::rule<Iterator, std::string()> Ident;
     	qi::rule<Iterator, std::string()> FileName;
     	qi::rule<Iterator, std::string(), qi::ascii::space_type> Path;
     	qi::rule<Iterator, SubItem(), qi::ascii::space_type> subItem;
         qi::rule<Iterator, Item(), qi::ascii::space_type> Folder;
+		qi::rule<Iterator, std::vector<SubItem>(), qi::ascii::space_type> SubItemList;
     };
 
 
     struct Folder {
     	Folder() : name("") {}
     	Folder(Item const item);
+		Folder(std::vector<SubItem> const &SubItems);
     	size_t size() { return files.size() + subfolders.size(); };
     	std::string name;
     	std::vector<std::string> files;

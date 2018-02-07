@@ -39,6 +39,13 @@ namespace Arx{
 		}
 	}
 
+	Folder::Folder(std::vector<SubItem> const &SubItems) {
+		name = "";
+		for (SubItem subitem : SubItems) { 
+			boost::apply_visitor(SubItemSplitter(this), subitem);
+		}
+	}
+
 	Folder ArxPackager::buildTree(){
 	    using qi::parse;
 		using qi::phrase_parse;
@@ -51,13 +58,12 @@ namespace Arx{
 		manifest.read(&manBuffer[0], size);
 
 		ManifestGrammar<std::string::const_iterator> grammar;
-		Item root;
-		std::cout << phrase_parse(manBuffer.begin(), manBuffer.end(), grammar, qi::ascii::space, root) << std::endl;
-		std::cout << root.name << root.subItems.size() << std::endl;
-		std::cout << root;
+		std::vector<SubItem> subItems;
+		phrase_parse(manBuffer.begin(), manBuffer.end(), grammar, qi::ascii::space, subItems);
+		std::cout << subItems.size() << std::endl;
 
 
-		Folder rootFolder(root);
+		Folder rootFolder(subItems);
 	    return rootFolder;
 	}
 
